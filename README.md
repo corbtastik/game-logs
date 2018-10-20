@@ -10,7 +10,7 @@ Simply stated its just fun with:
  
 * [Kotlin](https://kotlinlang.org) because its compact and cute
 * [Exposed](https://github.com/JetBrains/Exposed) because sql can be elegant too
-* [Baseball](https://www.retrosheet.org) historical record of the great game
+* [Baseball](https://www.mlb.com) with [Retrosheet](https://www.retrosheet.org)!
 * [Spring Boot](https://github.com/spring-projects/spring-boot) as the application framework
 * [Spring Shell](https://github.com/spring-projects/spring-shell) as the cli (awesomeness)
 
@@ -47,7 +47,7 @@ shell:>
 
 ## Play
 
-Type ``help`` to get a listing of methods to run.  The ``load`` method takes a [retrosheet](https://www.retrosheet.org) game-log file and loads [H2](http://www.h2database.com) using [Exposed](https://github.com/JetBrains/Exposed)
+Type ``help`` to get a listing of methods to run.  The ``load`` method takes a [retrosheet](https://www.retrosheet.org) game-log file and loads [H2](http://www.h2database.com) using [Exposed](https://github.com/JetBrains/Exposed).
 
 ### Load Game Log
 
@@ -59,19 +59,19 @@ Loaded 2430 Game Log records.
 #### Insert Snippet
 
 ```kotlin
-    GameLogsTable.insert({
-        it[dateOfGame] = parts[0].asDateTime("yyyyMMdd")
-        it[numberOfGame] = parts[1].unquote().toChar()
-        it[dayOfWeek] = parts[2].unquote()
-        it[visitingTeam] = parts[3].unquote()
-        it[visitingTeamLeague] = parts[4].unquote()
-        it[visitingTeamGameNumber] = parts[5].toInt()
-        it[homeTeam] = parts[6].unquote()
-        it[homeTeamLeague] = parts[7].unquote()
-        it[homeTeamGameNumber] = parts[8].toInt()
-        it[visitingTeamScore] = parts[9].toInt()
-        it[homeTeamScore] = parts[10].toInt()
-    })
+GameLogsTable.insert({
+    it[dateOfGame] = parts[0].asDateTime("yyyyMMdd")
+    it[numberOfGame] = parts[1].unquote().toChar()
+    it[dayOfWeek] = parts[2].unquote()
+    it[visitingTeam] = parts[3].unquote()
+    it[visitingTeamLeague] = parts[4].unquote()
+    it[visitingTeamGameNumber] = parts[5].toInt()
+    it[homeTeam] = parts[6].unquote()
+    it[homeTeamLeague] = parts[7].unquote()
+    it[homeTeamGameNumber] = parts[8].toInt()
+    it[visitingTeamScore] = parts[9].toInt()
+    it[homeTeamScore] = parts[10].toInt()
+})
 ```
 
 ### List Games
@@ -79,28 +79,28 @@ Loaded 2430 Game Log records.
 #### Spring-Shell method to list games
 
 ```kotlin
-    @ShellMethod("Games On: MM-dd-yyyy, for example 07-04-2017")
-    fun gamesOn(gameDate: String) {
-        transaction {
-            val query = GameLogsTable.select {
-                GameLogsTable.dateOfGame eq gameDate.asDateTime()
-            }
-            println("+--------------------------------+")
-            query.forEach {
-                val dateOfGame: DateTime = it[GameLogsTable.dateOfGame]
-                val visitingTeam: String = it[GameLogsTable.visitingTeam]
-                val visitingTeamLeague: String = it[GameLogsTable.visitingTeamLeague]
-                val homeTeam: String = it[GameLogsTable.homeTeam]
-                val homeTeamLeague: String = it[GameLogsTable.homeTeamLeague]
-                val visitingTeamScore: String = it[GameLogsTable.visitingTeamScore].toString().padStart(3)
-                val homeTeamScore: String = it[GameLogsTable.homeTeamScore].toString().padStart(3)
-
-                println("|${dateOfGame.asString()}|$visitingTeam|$visitingTeamLeague|$visitingTeamScore" +
-                        "|$homeTeam|$homeTeamLeague|$homeTeamScore|")
-            }
-            println("+--------------------------------+")
+@ShellMethod("Games On: MM-dd-yyyy, for example 07-04-2017")
+fun gamesOn(gameDate: String) {
+    transaction {
+        val query = GameLogsTable.select {
+            GameLogsTable.dateOfGame eq gameDate.asDateTime()
         }
+        println("+--------------------------------+")
+        query.forEach {
+            val dateOfGame: DateTime = it[GameLogsTable.dateOfGame]
+            val visitingTeam: String = it[GameLogsTable.visitingTeam]
+            val visitingTeamLeague: String = it[GameLogsTable.visitingTeamLeague]
+            val homeTeam: String = it[GameLogsTable.homeTeam]
+            val homeTeamLeague: String = it[GameLogsTable.homeTeamLeague]
+            val visitingTeamScore: String = it[GameLogsTable.visitingTeamScore].toString().padStart(3)
+            val homeTeamScore: String = it[GameLogsTable.homeTeamScore].toString().padStart(3)
+
+            println("|${dateOfGame.asString()}|$visitingTeam|$visitingTeamLeague|$visitingTeamScore" +
+                    "|$homeTeam|$homeTeamLeague|$homeTeamScore|")
+        }
+        println("+--------------------------------+")
     }
+}
 ```
 
 ```bash

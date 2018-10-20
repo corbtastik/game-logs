@@ -1,0 +1,9 @@
+spring:
+    application:
+        name: game-logs
+    h2:
+        console:
+            enabled: true
+#logging:
+#  level:
+#    Exposed: DEBUG
