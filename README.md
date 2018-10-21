@@ -9,7 +9,7 @@ Original Game Log Field schema is [here](https://www.retrosheet.org/gamelogs/glf
 Simply stated its just fun with:
  
 * [Kotlin](https://kotlinlang.org) because its compact and cute
-* [Exposed](https://github.com/JetBrains/Exposed) because sql can be elegant too
+* [Exposed](https://github.com/JetBrains/Exposed) for type-safe fluent SQL
 * [Baseball](https://www.mlb.com) with [Retrosheet](https://www.retrosheet.org)!
 * [Spring Boot](https://github.com/spring-projects/spring-boot) as the application framework
 * [Spring Shell](https://github.com/spring-projects/spring-shell) as the cli (awesomeness)

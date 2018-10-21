@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.shell.standard.ShellComponent
 import org.springframework.shell.standard.ShellMethod
+import org.springframework.shell.standard.ShellOption
 import java.io.File
 
 object GameLogsTable: Table() {
@@ -39,7 +40,7 @@ class GameLogsApplication {
         Database.connect("jdbc:h2:mem:gamelogs;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     }
 
-    @ShellMethod("Load Game Logs: game-log")
+    @ShellMethod("Load Game Logs: game-log, ex: /path/to/gamelog.csv")
     fun load(gameLog: String) {
         transaction {
             SchemaUtils.create(GameLogsTable)
@@ -64,53 +65,55 @@ class GameLogsApplication {
 
             println("Loaded $lines Game Log records.")
         }
-
     }
 
-    @ShellMethod("Games On: MM-dd-yyyy, for example 07-04-2017")
+    @ShellMethod("Games On: MM-dd-yyyy, ex: 07-04-2017")
     fun gamesOn(gameDate: String) {
         transaction {
             val query = GameLogsTable.select {
                 GameLogsTable.dateOfGame eq gameDate.asDateTime()
             }
-            println("+--------------------------------+")
-            query.forEach {
-                val dateOfGame: DateTime = it[GameLogsTable.dateOfGame]
-                val visitingTeam: String = it[GameLogsTable.visitingTeam]
-                val visitingTeamLeague: String = it[GameLogsTable.visitingTeamLeague]
-                val homeTeam: String = it[GameLogsTable.homeTeam]
-                val homeTeamLeague: String = it[GameLogsTable.homeTeamLeague]
-                val visitingTeamScore: String = it[GameLogsTable.visitingTeamScore].toString().padStart(3)
-                val homeTeamScore: String = it[GameLogsTable.homeTeamScore].toString().padStart(3)
-
-                println("|${dateOfGame.asString()}|$visitingTeam|$visitingTeamLeague|$visitingTeamScore" +
-                        "|$homeTeam|$homeTeamLeague|$homeTeamScore|")
-            }
-            println("+--------------------------------+")
+            fetchGames(query)
         }
     }
 
-    @ShellMethod("Games Between: MM-dd-yyyy MM-dd-yyyy, for example 07-04-2017 07-05-2017")
-    fun gamesBetween(start: String, end: String) {
+    @ShellMethod("Games Between: MM-dd-yyyy MM-dd-yyyy, ex: 07-04-2017 07-05-2017")
+    fun gamesBetween(@ShellOption(defaultValue = "01-01-2017") start: String,
+                     @ShellOption(defaultValue = "12-31-2017") end: String) {
         transaction {
             val query = GameLogsTable.select {
                 (GameLogsTable.dateOfGame greaterEq start.asDateTime()) and
                 (GameLogsTable.dateOfGame lessEq end.asDateTime())
             }
-            println("+--------------------------------+")
-            query.forEach {
-                val dateOfGame: DateTime = it[GameLogsTable.dateOfGame]
-                val visitingTeam: String = it[GameLogsTable.visitingTeam]
-                val visitingTeamLeague: String = it[GameLogsTable.visitingTeamLeague]
-                val homeTeam: String = it[GameLogsTable.homeTeam]
-                val homeTeamLeague: String = it[GameLogsTable.homeTeamLeague]
-                val visitingTeamScore: String = it[GameLogsTable.visitingTeamScore].toString().padStart(3)
-                val homeTeamScore: String = it[GameLogsTable.homeTeamScore].toString().padStart(3)
+            fetchGames(query)
+        }
+    }
 
-                println("|${dateOfGame.asString()}|$visitingTeam|$visitingTeamLeague|$visitingTeamScore" +
-                        "|$homeTeam|$homeTeamLeague|$homeTeamScore|")
+    @ShellMethod("Team Games: team, ex: TEX or: TEX 04-01-2017 04-30-2017")
+    fun teamGames(team: String,
+                  @ShellOption(defaultValue = "01-01-2017") start: String,
+                  @ShellOption(defaultValue = "12-31-2017") end: String) {
+        transaction {
+            val query = GameLogsTable.select {
+                (GameLogsTable.dateOfGame greaterEq start.asDateTime()) and
+                (GameLogsTable.dateOfGame lessEq end.asDateTime()) and
+                ((GameLogsTable.homeTeam eq team) or (GameLogsTable.visitingTeam eq team))
             }
-            println("+--------------------------------+")
+            fetchGames(query)
+        }
+    }
+
+    @ShellMethod("Home Team Games: team, ex: TEX or: TEX 04-01-2017 04-30-2017")
+    fun homeTeamGames(team: String,
+                      @ShellOption(defaultValue = "01-01-2017") start: String,
+                      @ShellOption(defaultValue = "12-31-2017") end: String) {
+        transaction {
+            val query = GameLogsTable.select {
+                (GameLogsTable.dateOfGame greaterEq start.asDateTime()) and
+                (GameLogsTable.dateOfGame lessEq end.asDateTime()) and
+                (GameLogsTable.homeTeam eq team)
+            }
+            fetchGames(query)
         }
     }
 
@@ -119,6 +122,31 @@ class GameLogsApplication {
         File(gameLog).forEachLine {
             println(it)
         }
+    }
+
+    private fun fetchGames(query: Query) {
+        printDiv()
+        query.forEach {
+            printGame(it)
+        }
+        printDiv()
+    }
+
+    private fun printGame(row: ResultRow) {
+        val dateOfGame: DateTime = row[GameLogsTable.dateOfGame]
+        val visitingTeam: String = row[GameLogsTable.visitingTeam]
+        val visitingTeamLeague: String = row[GameLogsTable.visitingTeamLeague]
+        val homeTeam: String = row[GameLogsTable.homeTeam]
+        val homeTeamLeague: String = row[GameLogsTable.homeTeamLeague]
+        val visitingTeamScore: String = row[GameLogsTable.visitingTeamScore].toString().padStart(3)
+        val homeTeamScore: String = row[GameLogsTable.homeTeamScore].toString().padStart(3)
+
+        println("|${dateOfGame.asString()}|$visitingTeam|$visitingTeamLeague|$visitingTeamScore" +
+                "|$homeTeam|$homeTeamLeague|$homeTeamScore|")
+    }
+
+    private fun printDiv() {
+        println("+--------------------------------+")
     }
 }
 
