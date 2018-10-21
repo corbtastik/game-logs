@@ -28,20 +28,20 @@ $ java -jar ./target/game-logs-0.0.1-SNAPSHOT.jar
  :: Spring Boot ::        (v2.0.6.RELEASE)
 shell:>help
 AVAILABLE COMMANDS
- 
+
 Built-In Commands
     clear: Clear the shell screen.
     exit, quit: Exit the shell.
     help: Display help about available commands.
     script: Read and execute commands from a file.
     stacktrace: Display the full stacktrace of the last error.
- 
+
 Game Logs Application
-    games-between: Games Between: MM-dd-yyyy MM-dd-yyyy, for example 07-04-2017 07-05-2017
-    games-on: Games On: MM-dd-yyyy, for example 07-04-2017
-    load: Load Game Logs: game-log
+    games-between: Games Between: MM-dd-yyyy MM-dd-yyyy, ex: 07-04-2017 07-05-2017
+    games-on: Games On: MM-dd-yyyy, ex: 07-04-2017
+    load: Load Game Logs: game-log, ex: /path/to/gamelog.csv
     print: Print Game Log: game-log
-shell:>
+    team-games: Team Games: team, ex: TEX or: TEX 04-01-2017 04-30-2017
 
 ```
 

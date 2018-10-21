@@ -102,7 +102,7 @@ class GameLogsApplication {
             fetchGames(query)
         }
     }
-    
+
     @ShellMethod("Print Game Log: game-log")
     fun print(gameLog: String) {
         File(gameLog).forEachLine {
