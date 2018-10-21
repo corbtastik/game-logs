@@ -102,21 +102,7 @@ class GameLogsApplication {
             fetchGames(query)
         }
     }
-
-    @ShellMethod("Home Team Games: team, ex: TEX or: TEX 04-01-2017 04-30-2017")
-    fun homeTeamGames(team: String,
-                      @ShellOption(defaultValue = "01-01-2017") start: String,
-                      @ShellOption(defaultValue = "12-31-2017") end: String) {
-        transaction {
-            val query = GameLogsTable.select {
-                (GameLogsTable.dateOfGame greaterEq start.asDateTime()) and
-                (GameLogsTable.dateOfGame lessEq end.asDateTime()) and
-                (GameLogsTable.homeTeam eq team)
-            }
-            fetchGames(query)
-        }
-    }
-
+    
     @ShellMethod("Print Game Log: game-log")
     fun print(gameLog: String) {
         File(gameLog).forEachLine {
